@@ -5,9 +5,10 @@ import StatCard from '../dashboard/StatCard';
 import RecentActivity from '../dashboard/RecentActivity';
 import UpcomingReservations from '../dashboard/UpcomingReservations';
 import NoticesList from '../dashboard/NoticesList';
+import { ActivityItem, ActivityType } from './ActivityItem';
 
 // Dados fictícios para demonstração
-const recentActivities = [
+const recentActivities: ActivityItem[] = [
   {
     id: '1',
     title: 'Nova Reserva',

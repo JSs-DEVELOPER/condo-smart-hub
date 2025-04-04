@@ -1,14 +1,7 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-interface ActivityItem {
-  id: string;
-  title: string;
-  description: string;
-  timestamp: string;
-  type: 'reserva' | 'comunicado' | 'ocorrencia' | 'financeiro';
-}
+import { ActivityItem } from '@/components/sections/ActivityItem';
 
 interface RecentActivityProps {
   activities: ActivityItem[];

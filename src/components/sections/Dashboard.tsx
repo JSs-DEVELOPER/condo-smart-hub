@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { CreditCard, Users, Calendar, MessageSquare, FileText, AlertTriangle, Home, PieChart, TrendingUp } from 'lucide-react';
 import StatCard from '../dashboard/StatCard';
@@ -9,7 +8,6 @@ import { ActivityItem, ActivityType } from './ActivityItem';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AuthContext } from '@/App';
 
-// Dados fictícios para demonstração
 const recentActivities: ActivityItem[] = [
   {
     id: '1',
@@ -147,10 +145,15 @@ const condoDetails = {
   ]
 };
 
-const Dashboard = () => {
-  const { userRole, userInfo } = useContext(AuthContext);
+interface DashboardProps {
+  userRole?: 'morador' | 'sindico' | 'subsindico' | 'conselheiro';
+}
+
+const Dashboard = ({ userRole: propUserRole }: DashboardProps) => {
+  const { userRole: contextUserRole, userInfo } = useContext(AuthContext);
   
-  // Renderizar estatísticas diferentes com base no papel do usuário
+  const userRole = propUserRole || contextUserRole;
+  
   const renderStats = () => {
     if (userRole === 'morador') {
       return (
@@ -204,7 +207,6 @@ const Dashboard = () => {
     );
   };
 
-  // Renderizar detalhes adicionais para gestores
   const renderAdminDetails = () => {
     if (userRole !== 'morador') {
       return (
@@ -259,7 +261,6 @@ const Dashboard = () => {
     return null;
   };
 
-  // Renderizar painel financeiro para moradores
   const renderResidentFinancial = () => {
     if (userRole === 'morador') {
       return (
@@ -307,7 +308,6 @@ const Dashboard = () => {
     return null;
   };
 
-  // Renderizar mais detalhes para administradores
   const renderMoreAdminDetails = () => {
     if (userRole !== 'morador') {
       return (

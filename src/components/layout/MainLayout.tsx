@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -7,17 +6,23 @@ import { AuthContext } from '@/App';
 interface MainLayoutProps {
   children: React.ReactNode;
   onChangeSection?: (section: string) => void;
+  userName?: string;
+  userRole?: 'morador' | 'sindico' | 'subsindico' | 'conselheiro';
 }
 
 const MainLayout = ({ 
   children,
-  onChangeSection
+  onChangeSection,
+  userName: propUserName,
+  userRole: propUserRole
 }: MainLayoutProps) => {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const { userRole, userInfo } = useContext(AuthContext);
+  const { userRole: contextUserRole, userInfo } = useContext(AuthContext);
 
-  // Função para obter o título da seção atual
+  const userRole = propUserRole || contextUserRole;
+  const userName = propUserName || userInfo?.name;
+
   const getSectionTitle = () => {
     switch (activeSection) {
       case 'dashboard':
@@ -41,7 +46,6 @@ const MainLayout = ({
     }
   };
 
-  // Handle section change
   const handleSectionChange = (section: string) => {
     setActiveSection(section);
     if (onChangeSection) {
@@ -49,7 +53,6 @@ const MainLayout = ({
     }
   };
 
-  // Obter iniciais do nome do usuário
   const getUserInitials = () => {
     const userName = userInfo?.name || '';
     
@@ -72,7 +75,7 @@ const MainLayout = ({
       <main className={`flex-1 transition-all ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         <Header 
           title={getSectionTitle()} 
-          userName={userInfo?.name}
+          userName={userName}
           userInitials={getUserInitials()}
           userRole={userRole}
           sidebarCollapsed={sidebarCollapsed}

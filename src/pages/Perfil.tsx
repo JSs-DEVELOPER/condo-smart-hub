@@ -1,4 +1,3 @@
-
 import React from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
@@ -79,7 +78,7 @@ const Perfil = () => {
   };
 
   return (
-    <MainLayout userName="João Silva" userRole="sindico">
+    <MainLayout>
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center mb-8">
           <Avatar className="h-20 w-20 mr-6">

@@ -127,6 +127,7 @@ const Login = () => {
               <p className="text-sm text-muted-foreground mb-2">Teste rápido:</p>
               <p className="text-xs text-muted-foreground">Administrador: admin@example.com / password123</p>
               <p className="text-xs text-muted-foreground">Morador: morador@example.com / password123</p>
+              <p className="text-xs text-muted-foreground">Ou registre uma nova conta e faça login com ela</p>
             </div>
           </div>
         </div>

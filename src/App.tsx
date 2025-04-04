@@ -49,7 +49,7 @@ const App = () => {
 
   // Função para realizar login
   const login = (email: string, password: string) => {
-    // Simulação de autenticação - em um app real, usaria uma API
+    // Verificar usuários hardcoded
     if (email === 'admin@example.com' && password === 'password123') {
       const userData = {
         id: '1',
@@ -79,6 +79,30 @@ const App = () => {
       localStorage.setItem('condoUser', JSON.stringify(userData));
       return true;
     }
+    
+    // Verificar usuários registrados no localStorage
+    const registeredUsers = JSON.parse(localStorage.getItem('condoUsers') || '[]');
+    const foundUser = registeredUsers.find(
+      (user: any) => user.email === email && user.password === password
+    );
+    
+    if (foundUser) {
+      const userData = {
+        id: foundUser.id,
+        name: foundUser.name || foundUser.nome,
+        email: foundUser.email,
+        role: foundUser.role,
+        bloco: foundUser.bloco,
+        apartamento: foundUser.apartamento,
+      };
+      
+      setIsAuthenticated(true);
+      setUserRole(foundUser.role);
+      setUserInfo(userData);
+      localStorage.setItem('condoUser', JSON.stringify(userData));
+      return true;
+    }
+    
     return false;
   };
 

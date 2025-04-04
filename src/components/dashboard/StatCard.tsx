@@ -25,7 +25,7 @@ const StatCard = ({ title, value, icon, change, className }: StatCardProps) => {
       {hasChange && (
         <div className={cn(
           "flex items-center text-xs",
-          isPositive ? "text-condo-green" : "text-condo-red"
+          isPositive ? "text-green-500" : "text-red-500"
         )}>
           {isPositive ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
           <span>{Math.abs(change)}% em relação ao mês anterior</span>

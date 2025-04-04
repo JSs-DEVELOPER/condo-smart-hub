@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 interface HeaderProps {
   title: string;
@@ -23,7 +24,7 @@ interface HeaderProps {
 
 const Header = ({ title, userName, userInitials, userRole, sidebarCollapsed }: HeaderProps) => {
   return (
-    <header className={`bg-white border-b border-border h-16 flex items-center justify-between px-4 sticky top-0 z-10 transition-all ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+    <header className={`bg-background border-b border-border h-16 flex items-center justify-between px-4 sticky top-0 z-10 transition-all ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
       <div>
         <h1 className="text-xl font-semibold">{title}</h1>
       </div>
@@ -37,6 +38,8 @@ const Header = ({ title, userName, userInitials, userRole, sidebarCollapsed }: H
       </div>
       
       <div className="flex items-center gap-2">
+        <ThemeToggle />
+        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="relative">

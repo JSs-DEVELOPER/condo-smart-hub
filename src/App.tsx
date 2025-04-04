@@ -5,65 +5,155 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { useState, useEffect, createContext } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import RecuperarSenha from "./pages/RecuperarSenha";
 import Perfil from "./pages/Perfil";
+import Reservas from "./pages/Reservas";
 
 const queryClient = new QueryClient();
 
-// Simulação de autenticação - em um app real, usaria um contexto de autenticação
-const isAuthenticated = true; // Altere para false para testar o redirecionamento
+// Criando o contexto de autenticação
+export const AuthContext = createContext<{
+  isAuthenticated: boolean;
+  userRole: 'morador' | 'sindico' | 'subsindico' | 'conselheiro';
+  userInfo: any;
+  login: (email: string, password: string) => boolean;
+  logout: () => void;
+}>({
+  isAuthenticated: false,
+  userRole: 'morador',
+  userInfo: null,
+  login: () => false,
+  logout: () => {},
+});
 
-// Componente para proteger rotas
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <>{children}</>;
+const App = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<'morador' | 'sindico' | 'subsindico' | 'conselheiro'>('morador');
+  const [userInfo, setUserInfo] = useState<any>(null);
+
+  // Verificar se existe um usuário no localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('condoUser');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      setIsAuthenticated(true);
+      setUserRole(user.role);
+      setUserInfo(user);
+    }
+  }, []);
+
+  // Função para realizar login
+  const login = (email: string, password: string) => {
+    // Simulação de autenticação - em um app real, usaria uma API
+    if (email === 'admin@example.com' && password === 'password123') {
+      const userData = {
+        id: '1',
+        name: 'Administrador',
+        email: 'admin@example.com',
+        role: 'sindico' as const,
+        bloco: 'A',
+        apartamento: '101',
+      };
+      setIsAuthenticated(true);
+      setUserRole('sindico');
+      setUserInfo(userData);
+      localStorage.setItem('condoUser', JSON.stringify(userData));
+      return true;
+    } else if (email === 'morador@example.com' && password === 'password123') {
+      const userData = {
+        id: '2',
+        name: 'João Morador',
+        email: 'morador@example.com',
+        role: 'morador' as const,
+        bloco: 'B',
+        apartamento: '202',
+      };
+      setIsAuthenticated(true);
+      setUserRole('morador');
+      setUserInfo(userData);
+      localStorage.setItem('condoUser', JSON.stringify(userData));
+      return true;
+    }
+    return false;
+  };
+
+  // Função para realizar logout
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUserRole('morador');
+    setUserInfo(null);
+    localStorage.removeItem('condoUser');
+  };
+
+  // Componente para proteger rotas
+  const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+    if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
+    
+    return <>{children}</>;
+  };
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, userRole, userInfo, login, logout }}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {/* Rotas públicas */}
+                <Route path="/login" element={
+                  isAuthenticated ? <Navigate to="/" /> : <Login />
+                } />
+                <Route path="/registro" element={
+                  isAuthenticated ? <Navigate to="/" /> : <Registro />
+                } />
+                <Route path="/recuperar-senha" element={
+                  isAuthenticated ? <Navigate to="/" /> : <RecuperarSenha />
+                } />
+                
+                {/* Rotas protegidas */}
+                <Route 
+                  path="/" 
+                  element={
+                    <ProtectedRoute>
+                      <Index />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/perfil" 
+                  element={
+                    <ProtectedRoute>
+                      <Perfil />
+                    </ProtectedRoute>
+                  } 
+                />
+                <Route 
+                  path="/reservas" 
+                  element={
+                    <ProtectedRoute>
+                      <Reservas />
+                    </ProtectedRoute>
+                  } 
+                />
+                
+                {/* Rota de fallback */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </AuthContext.Provider>
+  );
 };
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Rotas públicas */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
-            <Route path="/recuperar-senha" element={<RecuperarSenha />} />
-            
-            {/* Rotas protegidas */}
-            <Route 
-              path="/" 
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/perfil" 
-              element={
-                <ProtectedRoute>
-                  <Perfil />
-                </ProtectedRoute>
-              } 
-            />
-            
-            {/* Rota de fallback */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
 
 export default App;

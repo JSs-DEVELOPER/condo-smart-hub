@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { AuthContext } from '@/App';
 
 const registroSchema = z.object({
   nome: z.string().min(3, { message: 'O nome deve ter pelo menos 3 caracteres' }),
@@ -28,6 +29,7 @@ type RegistroFormValues = z.infer<typeof registroSchema>;
 
 const Registro = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   
   const form = useForm<RegistroFormValues>({
     resolver: zodResolver(registroSchema),
@@ -50,6 +52,22 @@ const Registro = () => {
       title: 'Registro concluído com sucesso!',
       description: 'Você já pode fazer login no sistema.',
     });
+    
+    // Em um app real, aqui você enviaria os dados para o backend
+    // e receberia um token de autenticação
+    
+    // Armazene o novo usuário (em um app real, isso seria feito pelo backend)
+    const newUsers = JSON.parse(localStorage.getItem('condoUsers') || '[]');
+    newUsers.push({
+      id: String(newUsers.length + 1),
+      name: data.nome,
+      email: data.email,
+      role: data.role,
+      bloco: data.bloco,
+      apartamento: data.apartamento,
+      password: data.password // Não faça isso em produção! As senhas devem ser hasheadas no backend
+    });
+    localStorage.setItem('condoUsers', JSON.stringify(newUsers));
     
     // Redirecionar para login após registro
     setTimeout(() => {

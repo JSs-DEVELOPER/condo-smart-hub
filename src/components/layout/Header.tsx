@@ -1,100 +1,67 @@
 
-import React from 'react';
-import { Bell, Search } from 'lucide-react';
+import React, { useContext } from 'react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '@/App';
 
 interface HeaderProps {
   title: string;
-  userName: string;
-  userInitials: string;
-  userRole: string;
-  sidebarCollapsed: boolean;
+  userName?: string;
+  userInitials?: string;
+  userRole?: 'morador' | 'sindico' | 'subsindico' | 'conselheiro';
+  sidebarCollapsed?: boolean;
 }
 
-const Header = ({ title, userName, userInitials, userRole, sidebarCollapsed }: HeaderProps) => {
+const Header = ({ 
+  title, 
+  userName, 
+  userInitials,
+  userRole, 
+  sidebarCollapsed 
+}: HeaderProps) => {
+  const navigate = useNavigate();
+  const { logout, userInfo } = useContext(AuthContext);
+
+  // Use context user info if available
+  const displayName = userInfo?.name || userName || 'Usuário';
+  const displayInitials = userInitials || displayName.charAt(0).toUpperCase();
+  const displayRole = userInfo?.role || userRole || 'morador';
+
+  const handleProfileClick = () => {
+    navigate('/perfil');
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <header className={`bg-background border-b border-border h-16 flex items-center justify-between px-4 sticky top-0 z-10 transition-all ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-      <div>
-        <h1 className="text-xl font-semibold">{title}</h1>
-      </div>
+    <header className="h-16 px-6 border-b flex items-center justify-between bg-background">
+      <h1 className="text-xl font-semibold">{title}</h1>
       
-      <div className="hidden md:flex items-center relative max-w-md w-full mx-4">
-        <Search className="absolute left-3 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Buscar..."
-          className="pl-10 w-full"
-        />
-      </div>
-      
-      <div className="flex items-center gap-2">
+      <div className="flex items-center space-x-4">
         <ThemeToggle />
         
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-0 right-0 h-2 w-2 bg-condo-red rounded-full" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-80">
-            <DropdownMenuLabel>Notificações</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <div className="max-h-80 overflow-y-auto">
-              <DropdownMenuItem className="cursor-pointer">
-                <div className="flex flex-col gap-1">
-                  <span className="font-medium">Nova solicitação de reserva</span>
-                  <span className="text-sm text-muted-foreground">Área de lazer - 15/04/2025</span>
-                  <span className="text-xs text-muted-foreground">agora mesmo</span>
-                </div>
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <div className="flex flex-col gap-1">
-                  <span className="font-medium">Novo comunicado</span>
-                  <span className="text-sm text-muted-foreground">Manutenção no elevador</span>
-                  <span className="text-xs text-muted-foreground">há 2 horas</span>
-                </div>
-              </DropdownMenuItem>
-            </div>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button 
+          variant="ghost" 
+          className="flex items-center space-x-2"
+          onClick={handleProfileClick}
+        >
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>{displayInitials}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col items-start text-sm">
+            <span className="font-medium">{displayName}</span>
+            <span className="text-xs text-muted-foreground capitalize">{displayRole}</span>
+          </div>
+        </Button>
         
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-2" asChild>
-              <div>
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="" />
-                  <AvatarFallback>{userInitials}</AvatarFallback>
-                </Avatar>
-                <span className="ml-2 hidden md:inline-block">{userName}</span>
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span>{userName}</span>
-                <span className="text-xs text-muted-foreground capitalize">{userRole}</span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Meu Perfil</DropdownMenuItem>
-            <DropdownMenuItem>Configurações</DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Sair</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Button variant="outline" size="sm" onClick={handleLogout}>
+          Sair
+        </Button>
       </div>
     </header>
   );

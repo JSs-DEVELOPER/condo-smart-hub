@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { toast } from '@/hooks/use-toast';
+import { AuthContext } from '@/App';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Digite um e-mail válido' }),
@@ -20,6 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,16 +34,15 @@ const Login = () => {
   const onSubmit = (data: LoginFormValues) => {
     console.log('Login attempt:', data);
     
-    // This is a mock login - in a real app, you'd integrate with an auth provider
-    if (data.email === 'admin@example.com' && data.password === 'password123') {
+    const success = login(data.email, data.password);
+    
+    if (success) {
       toast({
         title: 'Login bem-sucedido',
         description: 'Você está sendo redirecionado para o painel',
       });
-      // Simulate loading
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      // Redirect to dashboard
+      navigate('/');
     } else {
       toast({
         title: 'Falha no login',
@@ -121,6 +122,12 @@ const Login = () => {
                 Registre-se
               </Link>
             </p>
+
+            <div className="mt-4 border-t pt-4">
+              <p className="text-sm text-muted-foreground mb-2">Teste rápido:</p>
+              <p className="text-xs text-muted-foreground">Administrador: admin@example.com / password123</p>
+              <p className="text-xs text-muted-foreground">Morador: morador@example.com / password123</p>
+            </div>
           </div>
         </div>
       </main>
